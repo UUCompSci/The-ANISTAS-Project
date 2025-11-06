@@ -34,7 +34,7 @@ ANISTAS (Automated NIST Auditing System) simplifies the auditing process for SP 
 ## *CLI Cloning*
 ```
 # Clone repo
-$ git clone https://github.com/yourusername/anistas.git 
+$ git clone https://github.com/UUCompSci/The-ANISTAS-Project.git 
 $ cd anistas # Build
 $ go build -o anistas ./cmd/audit-cli 
 # Run a sample audit 

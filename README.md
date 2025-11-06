@@ -1,5 +1,14 @@
-# The-ANISTAS-Project
-An automated auditing software for NIST SP-171 covering the protection of controlled, unclassified information in non-federal systems and organizations.
+# The-ANISTAS-Project: Automated NIST Auditing System
+A Go-based tool for automating the compliance process for NIST SP 800-171 on nonfederal information systems.
+
+## Table of Contents
+* About
+* Features
+* Tech Stack
+* Getting Started
+* Usage
+* Project Status & Roadmap
+* License
 
 ## About
 ANISTAS (Automated NIST Auditing System) simplifies the auditing process for SP 800-171, making compliance easy. The tool automates auditing NIST controls, compares systems for compliance, and provides actionable reports and dashboards.
@@ -19,7 +28,7 @@ ANISTAS (Automated NIST Auditing System) simplifies the auditing process for SP 
 * Viper
 * Fyne
 **NIST Control(s) Framework:** OSCAL
-**Compliance Engine:** Custom Go modules parsing OSCAL-fomratted regulatory documents
+**Compliance Engine:** Custom Go modules parsing OSCAL-formatted regulatory documents
 
 # Getting Started
 ## *CLI Cloning*

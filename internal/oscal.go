@@ -139,30 +139,3 @@ func ToJSON(v interface{}) (string, error) {
 	}
 	return string(b), nil
 }
-
-// evaluate all controls and return assessment results
-func PerformAudit(db *sql.DB) []AssessmentResult {
-	var results []AssessmentResult
-
-	for _, ctrl := range NIST800171Controls {
-		status, evidence := checkControl(db, ctrl)
-		results = append(results, AssessmentResult{)
-			ControlID: ctrl.Id,
-			Status: status,
-			Evidence: evidence,
-		})
-	}
-
-	return results
-}
-
-// per-control check (placeholder code)
-func checkControl(db *sql.DB, ctrl Control) (string, string)  {
-	// TODO: I need to add logic for all of the contorls
-	// Placeholder
-	if ctrl.Id == "3.1.1" {
-		return "Pass", "ONLY admins found in access DB"
-	}
-	return "Fail", "No evidence collected yet"
-
-}

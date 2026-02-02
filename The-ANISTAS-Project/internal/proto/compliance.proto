@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package compliance;
+
+option go_package = "github.com/yourorg/filetransfer-compliance/internal/proto";
+
+// Service 2: Compliance Service
+service ComplianceService {
+  rpc CheckNIST800171 (ComplianceCheckRequest) returns (ComplianceCheckResponse);
+  rpc CheckOWASP (OWASPCheckRequest) returns (OWASPCheckResponse);
+}
+
+message ComplianceCheckRequest {
+  // Results from diagnostic service
+  string service_name = 1;
+  bool is_encrypted = 2;
+  string encryption_standard = 3;  // "TLS1.2", "TLS1.3", "SSL3", "none"
+  bool fips_validated = 4;
+  bool anonymous_access = 5;
+}
+
+message NISTFinding {
+  string control_id = 1;      // e.g., "3.13.8", "3.13.11"
+  string description = 2;
+  bool compliant = 3;
+  string severity = 4;        // "CRITICAL", "HIGH", "MEDIUM", "LOW"
+  string remediation = 5;
+  string rationale = 6;       // Why this control matters
+}
+
+message ComplianceCheckResponse {
+  bool overall_compliant = 1;
+  repeated NISTFinding findings = 2;
+  float compliance_score = 3;  // 0.0 to 100.0
+}
+
+message OWASPCheckRequest {
+  bool has_file_upload = 1;
+  bool validates_file_types = 2;
+  bool scans_for_viruses = 3;
+  bool requires_authentication = 4;
+}
+
+message OWASPFinding {
+  string category = 1;        // "File Upload", "Authentication", "Injection"
+  string requirement = 2;
+  bool compliant = 3;
+  string risk_level = 4;      // "CRITICAL", "HIGH", etc.
+  string mitigation = 5;
+}
+
+message OWASPCheckResponse {
+  bool overall_compliant = 1;
+  repeated OWASPFinding findings = 2;
+}

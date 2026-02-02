@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package report;
+
+option go_package = "github.com/yourorg/filetransfer-compliance/internal/proto";
+
+// Service 3: PDF Report Service
+service ReportService {
+  rpc GeneratePDF (GeneratePDFRequest) returns (GeneratePDFResponse);
+}
+
+message GeneratePDFRequest {
+  // Pass through diagnostic results
+  diagnostic.DiagnosticsResponse diag_data = 1;
+  // Pass through compliance results
+  compliance.ComplianceCheckResponse nist_data = 2;
+  compliance.OWASPCheckResponse owasp_data = 3;
+
+  string report_title = 4;
+  string organization = 5;
+  string prepared_by = 6;
+}
+
+message GeneratePDFResponse {
+  bool success = 1;
+  bytes pdf_bytes = 2;        // Return PDF as bytes (or write to path)
+  string output_path = 3;
+  string error_message = 4;
+}

@@ -2,7 +2,11 @@ syntax = "proto3";
 
 package report;
 
-option go_package = "github.com/yourorg/filetransfer-compliance/internal/proto";
+option go_package = "github.com/UUCompSci/The-ANISTAS-Project/internal/proto";
+
+// Correct imports: relative to the project root (or -I path)
+import "internal/proto/diagnostic.proto";
+import "internal/proto/compliance.proto";
 
 // Service 3: PDF Report Service
 service ReportService {
@@ -10,16 +14,14 @@ service ReportService {
 }
 
 message GeneratePDFRequest {
-  // Pass through diagnostic results
   diagnostic.DiagnosticsResponse diag_data = 1;
-  // Pass through compliance results
   compliance.ComplianceCheckResponse nist_data = 2;
-  compliance.OWASPCheckResponse owasp_data = 3;
 
-  string report_title = 4;
-  string organization = 5;
-  string prepared_by = 6;
+  string report_title = 3;
+  string organization = 4;
+  string prepared_by = 5;
 }
+
 
 message GeneratePDFResponse {
   bool success = 1;

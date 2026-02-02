@@ -7,10 +7,9 @@ import (
 	"os"
 	"time"
 
+	compliancepb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	pb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
 )
 
 const (
@@ -35,9 +34,9 @@ func main() {
 	log.Println("Connecting to diagnostic service...")
 	diagResult, err := getDiagnostics(ctx)
 	if err != nill {
-		log.Fatal("Diagnostic failed: %v", err)
+		log.Fatalf("Diagnostic failed: %v", err)
 	}
-	log.Printf("Dianostics complete: Service=%s, Running=%v, FTPS=%v",
+	log.Printf("Diagnostics complete: Service=%s, Running=%v, FTPS=%v",
 		diagResult.FtpConfig.ServiceName,
 		diagResult.FtpConfig.IsRunning,
 		diagResult.FtpConfig.IsFtps)
@@ -66,16 +65,21 @@ func main() {
 	}())
 }
 
-func getDiagnostics(ctx context.Context) (*pb.DiagnosticsResponse, error) {
-	conn, err := grpc.DialContext(ctx, diagAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func getDiagnostics(ctx context.Context) (*DiagnosticsResponse, error) {
+	conn, err := grpc.NewClient(ctx, diagAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %w", err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Fatalf("failed to close connection: %v", err)
+		}
+	}(conn)
 
-	client := pb.NewDiagnosticServiceClient(conn)
+	client := NewDiagnosticServiceClient(conn)
 
-	req := &pb.DiagnosticsRequest{
+	req := &DiagnosticsRequest{
 		TargetHost:        "localhost",
 		IncludePowershell: true,
 	}
@@ -83,17 +87,29 @@ func getDiagnostics(ctx context.Context) (*pb.DiagnosticsResponse, error) {
 	return client.RunFTDiagnostics(ctx, req)
 }
 
-func checkNISTCompliance(ctx context.Context, diag *pb.DiagnosticsResponse) (*pb.ComplianceCheckResponse, error) {
-	conn, err := grpc.Dial(complianceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func checkNISTCompliance(ctx context.Context, diag *DiagnosticsResponse) (*ComplianceCheckResponse, error) {
+	conn, err := grpc.NewClient(complianceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %w", err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Fatalf("failed to close connection: %v", err)
+		}
+	}(conn)
 
-	client := pb.NewComplianceServiceClient(conn)
+	client := compliancepb.NewComplianceServiceClient(conn)
+
+	owasp := &compliancepb.OWASPSignals{
+		HasFileUpload:          true,
+		RequiresAuthentication: !diag.FtpConfig.AnonymousAccess,
+		ValidatesFileTypes:     false,
+		ScansForViruses:        false,
+	}
 
 	// Map the diagnostic results to compliance check
-	req := &pb.ComplianceCheckRequest{
+	req := &ComplianceCheckRequest{
 		ServiceName:        diag.FtpConfig.ServiceName,
 		IsEncrypted:        diag.FtpConfig.IsFtps,
 		EncryptionStandard: mapTLSToStandard(diag.FtpConfig.TlsVersion),

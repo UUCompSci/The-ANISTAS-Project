@@ -10,7 +10,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	_ "encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -19,11 +18,8 @@ import (
 	"os/exec"
 	_ "os/exec"
 	"runtime"
-	_ "runtime"
-	"strings"
 	_ "strings"
 	"time"
-	_ "time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -39,9 +35,6 @@ type diagnosticServer struct {
 func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.DiagnosticsRequest) (*pb.DiagnosticsResponse, error) {
 	log.Printf("Received diagnostic request for host: %s",
 		req.TargetHost)
-	if runtime.GOOS != "windows" {
-		return fallbackLinuxDiagnostics(ctx, req)
-	}
 
 	psScript := `
 	# Requires -RunAsAdministrator
@@ -102,13 +95,13 @@ func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.Diagnos
 	$results | ConvertTo-Json -Compress
 	`
 	// Execute PS w/Admin context
-	exec.CommandContext(ctx, "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psScript)
-	cmd.SysProcAttr = getAdminSysProcAttr() // admin elevation
+	cmd := exec.CommandContext(ctx, "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psScript)
+	cmd.SysProcAttr = GetAdminSysProcAttr() // admin elevation
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("PowerShell execution failed: %v", err, string(output))
-		return nil, fmt.Errorf("failed to diagnoset: %w", err)
+		return nil, fmt.Errorf("failed to diagnose: %w", err)
 	}
 
 	// Parse JSON output
@@ -140,14 +133,14 @@ func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.Diagnos
 		}, nil
 	}
 
-	return &pb.DiagnosticResponse{
+	return &pb.DiagnosticsResponse{
 		Success: true,
 		FtpConfig: &pb.FTPConfig{
 			ServiceName:     psResults.ServiceName,
 			IsRunning:       psResults.IsRunning,
 			IsFtps:          psResults.IsFTPS,
 			TlsVersion:      psResults.TLSVersion,
-			Port:            psResults.Port,
+			Port:            int32(psResults.Port),
 			AnonymousAccess: psResults.AnonymousAccess,
 			AllowedIps:      psResults.AllowedIPs,
 			FipsCompliant:   psResults.FIPSCompliant,

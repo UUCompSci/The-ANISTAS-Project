@@ -21,8 +21,8 @@ type complianceServer struct {
 }
 
 // CHECK NIST SP 800-171
-func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.ComplianceCheckRequest) (*pb.ComplianceCheckresponse, error) {
-	log.Printf("Evaluating compliance against NIST SP 800-171 for: %s", req, ServiceName)
+func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.ComplianceCheckRequest) (*pb.ComplianceCheckResponse, error) {
+	log.Printf("Evaluating compliance against NIST SP 800-171 for: %s", req.ServiceName)
 
 	var findings []*pb.NISTFinding
 	compliant := true
@@ -49,7 +49,7 @@ func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.Complian
 	// NIST 800-171 Control 3.13.11: FIPS-validated cryptography
 	control_3_13_11 := &pb.NISTFinding{
 		ControlId:   "3.13.11",
-		Description: "Employ FIPS-validated cryptography when uesd to protect the confidentiality, integrity, or authenticity of information system components",
+		Description: "Employ FIPS-validated cryptography when used to protect the confidentiality, integrity, or authenticity of information system components",
 		Rationale:   "Only NIST CMVP-validated cryptographic modules may be used for the protection of CUI",
 		Severity:    "HIGH",
 		Remediation: "Enable FIPS mode in Windows (Local Security Policy) or use FIPS-validated TLS libraries.",
@@ -73,7 +73,8 @@ func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.Complian
 		Remediation: "Disable anonymous FTP access.",
 		Rationale:   "Anonymous access prevents accountability and audit trails",
 	}
-	if !req.AnonymousAccess {
+	if req.AnonymousAccess {
+		control_3_5_1.Compliant = false
 		compliant = false
 		score -= 30.0
 	} else {
@@ -89,62 +90,12 @@ func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.Complian
 	return &pb.ComplianceCheckResponse{
 		OverallCompliant: compliant,
 		Findings:         findings,
-		ComplianceScore:  score,
-	}, nil
-}
-
-// Check that OWASP validates against the FTP reqs
-func (s *complianceServer) CheckNIST(ctx context.Context, req *pb.NISTCheckRequest) (*pb.NISTCheckResponse, error) {
-	log.Printf("Evaluating NIST compliance")
-
-	var findings []*pb.NISTFinding
-	compliant := true
-
-	// File upload validation
-	findings = append(findings, &pb.NISTFinding{
-		Category:    "File Upload",
-		Requirement: "Validate file types and extensions before processing",
-		Compliant:   req.ValidatesFileTypes,
-		RiskLevel:   "HIGH",
-		Mitigation:  "Use a whitelist of allowed file types.",
-	})
-	if !req.ValidatesFileTypes {
-		compliant = false
-	} else {
-		compliant = true
-	}
-	// Authentication
-	findings = append(findings, &pb.OWASPFinding{
-		Category:    "Authentication",
-		Requirement: "Require authentication for all file transfer operations",
-		Compliant:   req.RequiresAuthentication,
-		RiskLevel:   "CRITICAL",
-		Mitigation:  "Enforce MFA and session management",
-	})
-	if !req.RequiresAuthentication {
-		compliant = false
-	}
-
-	// Malware scanning
-	findings = append(findings, &pb.OWASPFinding{
-		Category:    "Malware Defense",
-		Requirement: "Scan uploaded files for malicious content",
-		Compliant:   req.ScansForViruses,
-		RiskLevel:   "HIGH",
-		Mitigation:  "Integrate antivirus scanning before file storage/processing",
-	})
-	if !req.ScansForViruses {
-		compliant = false
-	}
-
-	return &pb.OWASPCheckResponse{
-		OverallCompliant: compliant,
-		Findings:         findings,
+		ComplianceScore:  float32(score),
 	}, nil
 }
 
 func main() {
-	lis, err := net.Listen("tcp", "50052")
+	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

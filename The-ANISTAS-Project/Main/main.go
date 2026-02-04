@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
-	compliancepb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
+	pb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -51,22 +52,24 @@ func main() {
 
 	// Service 3: PDF report
 	log.Println("Generating PDF report...")
-	pdfResult, err := generateReport(ctx, diagResult, nistResult, owaspResult)
+	pdfResult, err := generateReport(ctx, diagResult, nistResult)
 	if err != nil {
 		log.Fatalf("PDF generation failed: %v", err)
 	}
 
 	log.Printf("=== Report Generated ===")
-	log.Printf("Output: %s", func() string {
-		if nistResult.OverallCompliant && owaspResult.OverallCompliant {
+	log.Printf("Report path: %s", pdfResult.OutputPath)
+
+	log.Printf("Overall status: %s", func() string {
+		if nistResult.OverallCompliant {
 			return "COMPLIANT"
 		}
 		return "NON-COMPLIANT - Review findings immediately"
 	}())
 }
 
-func getDiagnostics(ctx context.Context) (*DiagnosticsResponse, error) {
-	conn, err := grpc.NewClient(ctx, diagAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func getDiagnostics(ctx context.Context) (*pb.DiagnosticsResponse, error) {
+	conn, err := grpc.NewClient(diagAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %w", err)
 	}
@@ -77,9 +80,9 @@ func getDiagnostics(ctx context.Context) (*DiagnosticsResponse, error) {
 		}
 	}(conn)
 
-	client := NewDiagnosticServiceClient(conn)
+	client := pb.NewDiagnosticServiceClient(conn)
 
-	req := &DiagnosticsRequest{
+	req := &pb.DiagnosticsRequest{
 		TargetHost:        "localhost",
 		IncludePowershell: true,
 	}
@@ -87,7 +90,7 @@ func getDiagnostics(ctx context.Context) (*DiagnosticsResponse, error) {
 	return client.RunFTDiagnostics(ctx, req)
 }
 
-func checkNISTCompliance(ctx context.Context, diag *DiagnosticsResponse) (*ComplianceCheckResponse, error) {
+func checkNISTCompliance(ctx context.Context, diag *pb.DiagnosticsResponse) (*pb.ComplianceCheckResponse, error) {
 	conn, err := grpc.NewClient(complianceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("did not connect: %w", err)
@@ -99,17 +102,10 @@ func checkNISTCompliance(ctx context.Context, diag *DiagnosticsResponse) (*Compl
 		}
 	}(conn)
 
-	client := compliancepb.NewComplianceServiceClient(conn)
-
-	owasp := &compliancepb.OWASPSignals{
-		HasFileUpload:          true,
-		RequiresAuthentication: !diag.FtpConfig.AnonymousAccess,
-		ValidatesFileTypes:     false,
-		ScansForViruses:        false,
-	}
+	client := pb.NewComplianceServiceClient(conn)
 
 	// Map the diagnostic results to compliance check
-	req := &ComplianceCheckRequest{
+	req := &pb.ComplianceCheckRequest{
 		ServiceName:        diag.FtpConfig.ServiceName,
 		IsEncrypted:        diag.FtpConfig.IsFtps,
 		EncryptionStandard: mapTLSToStandard(diag.FtpConfig.TlsVersion),
@@ -118,4 +114,43 @@ func checkNISTCompliance(ctx context.Context, diag *DiagnosticsResponse) (*Compl
 	}
 
 	return client.CheckNIST800171(ctx, req)
+}
+
+func generateReport(ctx context.Context,
+	diag *pb.DiagnosticsResponse,
+	nist *pb.ComplianceCheckResponse) (*pb.GeneratePDFResponse, error) {
+	conn, err := grpc.NewClient(pdfAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, fmt.Errorf("did not connect: %w", err)
+	}
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Fatalf("failed to close connection: %v", err)
+		}
+	}(conn)
+
+	client := pb.NewReportServiceClient(conn) // gen client from conn
+
+	// build the PDF request
+	req := &pb.GeneratePDFRequest{
+		DiagData:     diag,
+		NistData:     nist,
+		ReportTitle:  "ANISTAS Report: FTP Compliance" + time.Now().Format("2006-01-02 15:04:05"),
+		Organization: "The ANISTAS Project",
+		PreparedBy:   os.Getenv("USERNAME"),
+	}
+	return client.GeneratePDF(ctx, req)
+}
+
+// Map TLS version to standard
+func mapTLSToStandard(tlsVersion string) string {
+	switch strings.ToLower(tlsVersion) {
+	case "tls 1.2":
+		return "TLS_1_2"
+	case "tls 1.3":
+		return "TLS_1_3"
+	default:
+		return "UNKNOWN"
+	}
 }

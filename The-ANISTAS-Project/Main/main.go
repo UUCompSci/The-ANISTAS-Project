@@ -33,7 +33,7 @@ func main() {
 	// Service 1: Get diagnostics
 	log.Println("Connecting to diagnostic service...")
 	diagResult, err := getDiagnostics(ctx)
-	if err != nill {
+	if err != nil {
 		log.Fatalf("Diagnostic failed: %v", err)
 	}
 	log.Printf("Diagnostics complete: Service=%s, Running=%v, FTPS=%v",

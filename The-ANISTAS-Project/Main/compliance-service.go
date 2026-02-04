@@ -5,10 +5,10 @@ package main
 
 import (
 	"context"
-	"fmt"
+	_ "fmt"
 	"log"
 	"net"
-	"strings"
+	_ "strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

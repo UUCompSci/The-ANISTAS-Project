@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package diagnostic;
 
-option go_package = "github.com/The-ANISTAS-Project/filetransfer-compliance/internal/proto";
+option go_package = "github.com/UUCompSci/The-ANISTAS-Project/internal/proto";
 
 // Service 1: Diagnostic Service
 service DiagnosticService {

@@ -279,7 +279,7 @@ const file_internal_proto_diagnostic_proto_rawDesc = "" +
 	"\x15raw_powershell_output\x18\x04 \x03(\tR\x13rawPowershellOutput\x12%\n" +
 	"\x0etimestamp_unix\x18\x05 \x01(\x03R\rtimestampUnix2h\n" +
 	"\x11DiagnosticService\x12S\n" +
-	"\x10RunFTDiagnostics\x12\x1e.diagnostic.DiagnosticsRequest\x1a\x1f.diagnostic.DiagnosticsResponseBGZEgithub.com/The-ANISTAS-Project/filetransfer-compliance/internal/protob\x06proto3"
+	"\x10RunFTDiagnostics\x12\x1e.diagnostic.DiagnosticsRequest\x1a\x1f.diagnostic.DiagnosticsResponseB9Z7github.com/UUCompSci/The-ANISTAS-Project/internal/protob\x06proto3"
 
 var (
 	file_internal_proto_diagnostic_proto_rawDescOnce sync.Once

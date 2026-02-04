@@ -13,17 +13,13 @@ import (
 	"fmt"
 	"log"
 	"net"
-	_ "net/http"
-	_ "os"
 	"os/exec"
-	_ "os/exec"
-	"runtime"
-	_ "strings"
 	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/UUCompSci/The-ANISTAS-Project/internal/powershell"
 	pb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
 )
 
@@ -31,7 +27,7 @@ type diagnosticServer struct {
 	pb.UnimplementedDiagnosticServiceServer
 }
 
-// RunFTDDiagnostics exec PS cmds to gather FTP service state
+// RunFTDiagnostics RunFTDDiagnostics exec PS cmd to gather FTP service state
 func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.DiagnosticsRequest) (*pb.DiagnosticsResponse, error) {
 	log.Printf("Received diagnostic request for host: %s",
 		req.TargetHost)
@@ -96,11 +92,11 @@ func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.Diagnos
 	`
 	// Execute PS w/Admin context
 	cmd := exec.CommandContext(ctx, "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psScript)
-	cmd.SysProcAttr = GetAdminSysProcAttr() // admin elevation
+	cmd.SysProcAttr = powershell.GetAdminSysProcAttr() // admin elevation
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("PowerShell execution failed: %v", err, string(output))
+		log.Printf("PowerShell execution failed: %v, output: %s", err, string(output))
 		return nil, fmt.Errorf("failed to diagnose: %w", err)
 	}
 
@@ -145,7 +141,7 @@ func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.Diagnos
 			AllowedIps:      psResults.AllowedIPs,
 			FipsCompliant:   psResults.FIPSCompliant,
 		},
-		RawPowerShellOutput: []string{string(output)},
+		RawPowershellOutput: []string{string(output)},
 		TimestampUnix:       time.Now().Unix(),
 	}, nil
 }

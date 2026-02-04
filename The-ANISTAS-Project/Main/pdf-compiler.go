@@ -10,11 +10,10 @@ import (
 	"html/template"
 	"log"
 	"net"
-	"os"
 	"os/exec"
 	"time"
 
-	wkhtmltopdf "github.com/SebastiaanKlippert/go-wkhtmltopdf"
+	"github.com/SebastiaanKlippert/go-wkhtmltopdf"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -29,7 +28,7 @@ type reportServer struct {
 func (s *reportServer) GeneratePDF(ctx context.Context, req *pb.GeneratePDFRequest) (*pb.GeneratePDFResponse, error) {
 	log.Printf("Generating PDF report: %s", req.ReportTitle)
 
-	// Generate HTML from template
+	// Generate HTML from a template
 	html, err := generateHTML(req)
 	if err != nil {
 		return nil, fmt.Errorf("html generation failed: %w", err)
@@ -169,7 +168,6 @@ func generateHTML(req *pb.GeneratePDFRequest) (string, error) {
 		GeneratedAt  string
 		DiagData     *pb.DiagnosticsResponse
 		NistData     *pb.ComplianceCheckResponse
-		OwaspData    *pb.OWASPCheckResponse
 	}
 
 	data := templateData{
@@ -179,7 +177,6 @@ func generateHTML(req *pb.GeneratePDFRequest) (string, error) {
 		GeneratedAt:  time.Now().Format("2006-01-02 15:04:05"),
 		DiagData:     req.DiagData,
 		NistData:     req.NistData,
-		OwaspData:    req.OwaspData,
 	}
 
 	t := template.Must(template.New("report").Parse(tmpl))

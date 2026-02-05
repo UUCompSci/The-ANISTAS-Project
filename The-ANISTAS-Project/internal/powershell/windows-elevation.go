@@ -4,6 +4,8 @@
 package powershell
 
 import (
+	"os"
+	"strings"
 	"syscall"
 
 	"golang.org/x/sys/windows"
@@ -32,4 +34,39 @@ func GetAdminSysProcAttr() *syscall.SysProcAttr {
 		AdditionalInheritedHandles: nil,
 		ParentProcess:              0,
 	}
+}
+
+// This function checks to see if the current user is an administrator
+func amAdmin() bool {
+	f, err := os.Open("\\\\.\\PHYSICALDRIVE0")
+	if err != nil {
+		return false
+	}
+	_ = f.Close()
+	return true
+}
+
+// If the user is not an administrator, relaunch the program
+func relaunchAsAdmin() error {
+	verb := "runas" // tell shell execute to run as admin
+
+	exe, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	args := strings.Join(os.Args[1:], "")
+
+	verbPtr, _ := syscall.UTF16PtrFromString(verb)
+	exePtr, _ := syscall.UTF16PtrFromString(exe)
+	cwdPtr, _ := syscall.UTF16PtrFromString(cwd)
+	argsPtr, _ := syscall.UTF16PtrFromString(args)
+
+	const SW_NORMAL int32 = 1
+
+	// this will prompt the window to allow admin access
+	return windows.ShellExecute(0, verbPtr, exePtr, argsPtr, cwdPtr, SW_NORMAL)
 }

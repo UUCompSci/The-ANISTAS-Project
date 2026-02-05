@@ -7,10 +7,12 @@ import (
 	"os"
 	"strings"
 	"time"
+	"syscall"
 
 	pb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"golang.org/x/sys/windows"
 )
 
 const (
@@ -24,7 +26,7 @@ func main() {
 	log.Println("Ensure this program is running as administrator")
 
 	// Check for admin privileges
-	if os.Geteuid() != 0 {
+	if windows.
 		log.Fatal("This program must be run as administrator")
 	}
 

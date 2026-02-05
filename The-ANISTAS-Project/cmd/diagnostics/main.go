@@ -33,63 +33,63 @@ func (s *diagnosticServer) RunFTDiagnostics(ctx context.Context, req *pb.Diagnos
 		req.TargetHost)
 
 	psScript := `
-	# Requires -RunAsAdministrator
-	$results = @{
-		ServiceName = "FTPSVC"
-		IsRunning = $false
-		TLSVersion = ""
-		Port = 21
-		AnonymousAccess = $false
-		AllowedIPs = @()
-		FIPSCompliant = "unknown"
-	}
-	
-	try {
-		# Check if FTP service is running/exists
-		$svc = Get-Service -Name "FTPSVC" -ErrorAction SilentlyContinue
-		if ($svc) {
-			$results.IsRunning = ($svc.Status -eq "Running")
-			
-			# Get FTP site configuration from IIS
-			Import-Module WebAdministration -ErrorAction SilentlyContinue
-			
-			# Check for FTP over TLS configuration
-			$ftpSite = Get-Item "IIS:\Sites\*" | Where-Object { $_.bindings.protocol -eq "ftps" } | Select-Object -First 1
-				if ($ftpSite) {
-					# Check SSL settings
-					$sslPolicy = Get-ItemProperty
-					"IIS:\Sites\$($ftpSite.Name)\ftpServer\security\ssl" -Name "sslPolicy" -ErrorAction SilentlyContinue
-						
-						if ($sslPolicy) {
-							$results.IsFTPS = $true
-							# Detect TLS version
-							$tls = [System.Net.ServicePointManager]::SecurityProtocol
-							$results.TLSVersion = $tls.ToString()
-						}
-	
-						# Check authentication settings
-						$auth = Get-ItemProperty "IIS:\Sites\$($ftpSite.Name)\ftpServer\security\authentication" -ErrorAction SilentlyContinue
-							if ($auth) {
-								$results.AnonymousAccess = ($auth.AnonymousAuthentication.enabled -eq $True)
-				}
-			}
-		}
-	
-		# Check FIPS compliance via registry
-		$fipsReg = Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy" -Name "Enabled" -ErrorAction SilentlyContinue
-			if ($fipsReg.Enabled -eq 1) {
-				$results.FIPSCompliant = "true"
-			} else {
-				$results.FIPSCompliant = "false"
-			}
-	
-	} catch {
-		$results.Error = $_.Exception.Message
-	}
-	
-	# Output results as JSON
-	$results | ConvertTo-Json -Compress
-	`
+# Requires -RunAsAdministrator
+$results = @{
+    ServiceName     = "FTPSVC"
+    IsRunning       = $false
+    TLSVersion      = ""
+    Port            = 21
+    AnonymousAccess = $false
+    AllowedIPs      = @()
+    FIPSCompliant   = "unknown"
+}
+
+try {
+    # Check if FTP service is running/exists
+    $svc = Get-Service -Name "FTPSVC" -ErrorAction SilentlyContinue
+    if ($svc) {
+        $results.IsRunning = ($svc.Status -eq "Running")
+
+        # Get FTP site configuration from IIS
+        Import-Module WebAdministration -ErrorAction SilentlyContinue
+
+        # Check for FTP over TLS configuration
+        $ftpSite = Get-Item "IIS:\Sites\*" | Where-Object { $_.bindings.protocol -eq "ftps" } | Select-Object -First 1
+        if ($ftpSite) {
+
+            # Check SSL settings
+            $sslPolicy = Get-ItemProperty "IIS:\Sites\$($ftpSite.Name)\ftpServer\security\ssl" -Name "sslPolicy" -ErrorAction SilentlyContinue
+            if ($sslPolicy) {
+                $results.IsFTPS = $true
+
+                # Detect TLS version
+                $tls = [System.Net.ServicePointManager]::SecurityProtocol
+                $results.TLSVersion = $tls.ToString()
+            }
+
+            # Check authentication settings
+            $auth = Get-ItemProperty "IIS:\Sites\$($ftpSite.Name)\ftpServer\security\authentication" -ErrorAction SilentlyContinue
+            if ($auth) {
+                $results.AnonymousAccess = ($auth.AnonymousAuthentication.enabled -eq $True)
+            }
+
+            # Check FIPS compliance via registry
+            $fipsReg = Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy" -Name "Enabled" -ErrorAction SilentlyContinue
+            if ($fipsReg.Enabled -eq 1) {
+                $results.FIPSCompliant = "true"
+            } else {
+                $results.FIPSCompliant = "false"
+            }
+        }
+    }
+} catch {
+    $results.Error = $_.Exception.Message
+}
+
+# Output results as JSON
+$results | ConvertTo-Json -Compress
+`
+
 	// Execute PS w/Admin context
 	cmd := exec.CommandContext(ctx, "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psScript)
 	cmd.SysProcAttr = powershell.GetAdminSysProcAttr() // admin elevation

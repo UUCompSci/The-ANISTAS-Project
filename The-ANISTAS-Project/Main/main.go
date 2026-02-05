@@ -7,12 +7,12 @@ import (
 	"os"
 	"strings"
 	"time"
-	"syscall"
 
+	"github.com/UUCompSci/The-ANISTAS-Project/internal/powershell"
 	pb "github.com/UUCompSci/The-ANISTAS-Project/internal/proto"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"golang.org/x/sys/windows"
 )
 
 const (
@@ -26,9 +26,16 @@ func main() {
 	log.Println("Ensure this program is running as administrator")
 
 	// Check for admin privileges
-	if windows.
-		log.Fatal("This program must be run as administrator")
+	if !powershell.AmAdmin() {
+		log.Println("Admin privileges not detected. Attempting to elevate...")
+		if err := powershell.RelaunchAsAdmin(); err != nil {
+			log.Fatalf("Failed to relaunch as admin: %v", err)
+		}
+		// will then exit this non-elevated instance and attempt relaunch
+		return
 	}
+
+	log.Println("Admin privileges detected. Continuing...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()

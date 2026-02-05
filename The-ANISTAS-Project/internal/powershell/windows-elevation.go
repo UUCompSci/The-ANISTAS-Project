@@ -37,7 +37,7 @@ func GetAdminSysProcAttr() *syscall.SysProcAttr {
 }
 
 // This function checks to see if the current user is an administrator
-func amAdmin() bool {
+func AmAdmin() bool {
 	f, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 	if err != nil {
 		return false
@@ -47,7 +47,7 @@ func amAdmin() bool {
 }
 
 // If the user is not an administrator, relaunch the program
-func relaunchAsAdmin() error {
+func RelaunchAsAdmin() error {
 	verb := "runas" // tell shell execute to run as admin
 
 	exe, err := os.Executable()

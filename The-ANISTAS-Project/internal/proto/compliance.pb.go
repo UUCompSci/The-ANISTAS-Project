@@ -21,91 +21,21 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// OWASP derived signals to evaluate NIST specs
-type OWASPSignals struct {
-	state              protoimpl.MessageState `protogen:"open.v1"`
-	HasFileUpload      bool                   `protobuf:"varint,1,opt,name=has_file_upload,json=hasFileUpload,proto3" json:"has_file_upload,omitempty"`
-	ValidatesFileTypes bool                   `protobuf:"varint,2,opt,name=validates_file_types,json=validatesFileTypes,proto3" json:"validates_file_types,omitempty"`
-	ScansForViruses    bool                   `protobuf:"varint,3,opt,name=scans_for_viruses,json=scansForViruses,proto3" json:"scans_for_viruses,omitempty"`
-	RequiresAuth       bool                   `protobuf:"varint,4,opt,name=requires_auth,json=requiresAuth,proto3" json:"requires_auth,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
-}
-
-func (x *OWASPSignals) Reset() {
-	*x = OWASPSignals{}
-	mi := &file_internal_proto_compliance_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *OWASPSignals) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*OWASPSignals) ProtoMessage() {}
-
-func (x *OWASPSignals) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_compliance_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use OWASPSignals.ProtoReflect.Descriptor instead.
-func (*OWASPSignals) Descriptor() ([]byte, []int) {
-	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *OWASPSignals) GetHasFileUpload() bool {
-	if x != nil {
-		return x.HasFileUpload
-	}
-	return false
-}
-
-func (x *OWASPSignals) GetValidatesFileTypes() bool {
-	if x != nil {
-		return x.ValidatesFileTypes
-	}
-	return false
-}
-
-func (x *OWASPSignals) GetScansForViruses() bool {
-	if x != nil {
-		return x.ScansForViruses
-	}
-	return false
-}
-
-func (x *OWASPSignals) GetRequiresAuth() bool {
-	if x != nil {
-		return x.RequiresAuth
-	}
-	return false
-}
-
 type ComplianceCheckRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Results from diagnostic service
-	ServiceName        string        `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
-	IsEncrypted        bool          `protobuf:"varint,2,opt,name=is_encrypted,json=isEncrypted,proto3" json:"is_encrypted,omitempty"`
-	EncryptionStandard string        `protobuf:"bytes,3,opt,name=encryption_standard,json=encryptionStandard,proto3" json:"encryption_standard,omitempty"` // "TLS1.2", "TLS1.3", "SSL3", "none"
-	FipsValidated      bool          `protobuf:"varint,4,opt,name=fips_validated,json=fipsValidated,proto3" json:"fips_validated,omitempty"`
-	AnonymousAccess    bool          `protobuf:"varint,5,opt,name=anonymous_access,json=anonymousAccess,proto3" json:"anonymous_access,omitempty"`
-	OwaspSignals       *OWASPSignals `protobuf:"bytes,6,opt,name=owasp_signals,json=owaspSignals,proto3" json:"owasp_signals,omitempty"`
+	ServiceName        string `protobuf:"bytes,1,opt,name=service_name,json=serviceName,proto3" json:"service_name,omitempty"`
+	IsEncrypted        bool   `protobuf:"varint,2,opt,name=is_encrypted,json=isEncrypted,proto3" json:"is_encrypted,omitempty"`
+	EncryptionStandard string `protobuf:"bytes,3,opt,name=encryption_standard,json=encryptionStandard,proto3" json:"encryption_standard,omitempty"` // "TLS1.2", "TLS1.3", "SSL3", "none"
+	FipsValidated      bool   `protobuf:"varint,4,opt,name=fips_validated,json=fipsValidated,proto3" json:"fips_validated,omitempty"`
+	AnonymousAccess    bool   `protobuf:"varint,5,opt,name=anonymous_access,json=anonymousAccess,proto3" json:"anonymous_access,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
 
 func (x *ComplianceCheckRequest) Reset() {
 	*x = ComplianceCheckRequest{}
-	mi := &file_internal_proto_compliance_proto_msgTypes[1]
+	mi := &file_internal_proto_compliance_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -117,7 +47,7 @@ func (x *ComplianceCheckRequest) String() string {
 func (*ComplianceCheckRequest) ProtoMessage() {}
 
 func (x *ComplianceCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_compliance_proto_msgTypes[1]
+	mi := &file_internal_proto_compliance_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -130,7 +60,7 @@ func (x *ComplianceCheckRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComplianceCheckRequest.ProtoReflect.Descriptor instead.
 func (*ComplianceCheckRequest) Descriptor() ([]byte, []int) {
-	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{1}
+	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ComplianceCheckRequest) GetServiceName() string {
@@ -168,13 +98,6 @@ func (x *ComplianceCheckRequest) GetAnonymousAccess() bool {
 	return false
 }
 
-func (x *ComplianceCheckRequest) GetOwaspSignals() *OWASPSignals {
-	if x != nil {
-		return x.OwaspSignals
-	}
-	return nil
-}
-
 // NIST 800-171 control eval result
 type NISTFinding struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -190,7 +113,7 @@ type NISTFinding struct {
 
 func (x *NISTFinding) Reset() {
 	*x = NISTFinding{}
-	mi := &file_internal_proto_compliance_proto_msgTypes[2]
+	mi := &file_internal_proto_compliance_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -202,7 +125,7 @@ func (x *NISTFinding) String() string {
 func (*NISTFinding) ProtoMessage() {}
 
 func (x *NISTFinding) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_compliance_proto_msgTypes[2]
+	mi := &file_internal_proto_compliance_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -215,7 +138,7 @@ func (x *NISTFinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NISTFinding.ProtoReflect.Descriptor instead.
 func (*NISTFinding) Descriptor() ([]byte, []int) {
-	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{2}
+	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *NISTFinding) GetControlId() string {
@@ -271,7 +194,7 @@ type ComplianceCheckResponse struct {
 
 func (x *ComplianceCheckResponse) Reset() {
 	*x = ComplianceCheckResponse{}
-	mi := &file_internal_proto_compliance_proto_msgTypes[3]
+	mi := &file_internal_proto_compliance_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -283,7 +206,7 @@ func (x *ComplianceCheckResponse) String() string {
 func (*ComplianceCheckResponse) ProtoMessage() {}
 
 func (x *ComplianceCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_compliance_proto_msgTypes[3]
+	mi := &file_internal_proto_compliance_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -296,7 +219,7 @@ func (x *ComplianceCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComplianceCheckResponse.ProtoReflect.Descriptor instead.
 func (*ComplianceCheckResponse) Descriptor() ([]byte, []int) {
-	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{3}
+	return file_internal_proto_compliance_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ComplianceCheckResponse) GetOverallCompliant() bool {
@@ -325,19 +248,13 @@ var File_internal_proto_compliance_proto protoreflect.FileDescriptor
 const file_internal_proto_compliance_proto_rawDesc = "" +
 	"\n" +
 	"\x1finternal/proto/compliance.proto\x12\n" +
-	"compliance\"\xb9\x01\n" +
-	"\fOWASPSignals\x12&\n" +
-	"\x0fhas_file_upload\x18\x01 \x01(\bR\rhasFileUpload\x120\n" +
-	"\x14validates_file_types\x18\x02 \x01(\bR\x12validatesFileTypes\x12*\n" +
-	"\x11scans_for_viruses\x18\x03 \x01(\bR\x0fscansForViruses\x12#\n" +
-	"\rrequires_auth\x18\x04 \x01(\bR\frequiresAuth\"\xa0\x02\n" +
+	"compliance\"\xe1\x01\n" +
 	"\x16ComplianceCheckRequest\x12!\n" +
 	"\fservice_name\x18\x01 \x01(\tR\vserviceName\x12!\n" +
 	"\fis_encrypted\x18\x02 \x01(\bR\visEncrypted\x12/\n" +
 	"\x13encryption_standard\x18\x03 \x01(\tR\x12encryptionStandard\x12%\n" +
 	"\x0efips_validated\x18\x04 \x01(\bR\rfipsValidated\x12)\n" +
-	"\x10anonymous_access\x18\x05 \x01(\bR\x0fanonymousAccess\x12=\n" +
-	"\rowasp_signals\x18\x06 \x01(\v2\x18.compliance.OWASPSignalsR\fowaspSignals\"\xc8\x01\n" +
+	"\x10anonymous_access\x18\x05 \x01(\bR\x0fanonymousAccess\"\xc8\x01\n" +
 	"\vNISTFinding\x12\x1d\n" +
 	"\n" +
 	"control_id\x18\x01 \x01(\tR\tcontrolId\x12 \n" +
@@ -365,23 +282,21 @@ func file_internal_proto_compliance_proto_rawDescGZIP() []byte {
 	return file_internal_proto_compliance_proto_rawDescData
 }
 
-var file_internal_proto_compliance_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_internal_proto_compliance_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_internal_proto_compliance_proto_goTypes = []any{
-	(*OWASPSignals)(nil),            // 0: compliance.OWASPSignals
-	(*ComplianceCheckRequest)(nil),  // 1: compliance.ComplianceCheckRequest
-	(*NISTFinding)(nil),             // 2: compliance.NISTFinding
-	(*ComplianceCheckResponse)(nil), // 3: compliance.ComplianceCheckResponse
+	(*ComplianceCheckRequest)(nil),  // 0: compliance.ComplianceCheckRequest
+	(*NISTFinding)(nil),             // 1: compliance.NISTFinding
+	(*ComplianceCheckResponse)(nil), // 2: compliance.ComplianceCheckResponse
 }
 var file_internal_proto_compliance_proto_depIdxs = []int32{
-	0, // 0: compliance.ComplianceCheckRequest.owasp_signals:type_name -> compliance.OWASPSignals
-	2, // 1: compliance.ComplianceCheckResponse.findings:type_name -> compliance.NISTFinding
-	1, // 2: compliance.ComplianceService.CheckNIST800171:input_type -> compliance.ComplianceCheckRequest
-	3, // 3: compliance.ComplianceService.CheckNIST800171:output_type -> compliance.ComplianceCheckResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1, // 0: compliance.ComplianceCheckResponse.findings:type_name -> compliance.NISTFinding
+	0, // 1: compliance.ComplianceService.CheckNIST800171:input_type -> compliance.ComplianceCheckRequest
+	2, // 2: compliance.ComplianceService.CheckNIST800171:output_type -> compliance.ComplianceCheckResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_internal_proto_compliance_proto_init() }
@@ -395,7 +310,7 @@ func file_internal_proto_compliance_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_proto_compliance_proto_rawDesc), len(file_internal_proto_compliance_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

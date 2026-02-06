@@ -139,20 +139,6 @@ func generateHTML(req *pb.GeneratePDFRequest) (string, error) {
     </div>
 
     <div class="section">
-        <h2>OWASP Security Findings</h2>
-        {{range .OwaspData.Findings}}
-        <div class="finding {{if .Compliant}}compliant{{else}}non-compliant{{end}}">
-            <strong>{{.Category}}</strong> [{{.RiskLevel}}]<br>
-            {{.Requirement}}<br>
-            <em>Status: {{if .Compliant}}PASS{{else}}FAIL{{end}}</em><br>
-            {{if not .Compliant}}
-                <strong>Mitigation:</strong> {{.Mitigation}}
-            {{end}}
-        </div>
-        {{end}}
-    </div>
-
-    <div class="section">
         <h2>Administrative Notes</h2>
         <p>This report was generated with elevated privileges to access system configuration.</p>
         <p>Raw diagnostic data available separately for audit trail.</p>

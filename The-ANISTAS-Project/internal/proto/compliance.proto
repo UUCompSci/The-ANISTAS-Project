@@ -8,13 +8,6 @@ option go_package = "github.com/UUCompSci/The-ANISTAS-Project/internal/proto";
 service ComplianceService {
   rpc CheckNIST800171 (ComplianceCheckRequest) returns (ComplianceCheckResponse);
 }
-// OWASP derived signals to evaluate NIST specs
-message OWASPSignals {
-  bool has_file_upload = 1;
-  bool validates_file_types = 2;
-  bool scans_for_viruses = 3;
-  bool requires_auth = 4;
-}
 
 message ComplianceCheckRequest {
   // Results from diagnostic service
@@ -23,8 +16,6 @@ message ComplianceCheckRequest {
   string encryption_standard = 3;  // "TLS1.2", "TLS1.3", "SSL3", "none"
   bool fips_validated = 4;
   bool anonymous_access = 5;
-
-  OWASPSignals owasp_signals = 6;
 }
 // NIST 800-171 control eval result
 message NISTFinding {

@@ -58,7 +58,7 @@ try {
         if ($ftpSite) {
 
             # Check SSL settings
-            $sslPolicy = Get-ItemProperty "IIS:\Sites\$($ftpSite.Name)\ftpServer\security\ssl" -Name "sslPolicy" -ErrorAction SilentlyContinue
+           $sslPolicy = Get-ItemProperty "IIS:\Sites\$($ftpSite.Name)\ftpServer\security\ssl" -Name "sslPolicy" -ErrorAction SilentlyContinue
             if ($sslPolicy) {
                 $results.IsFTPS = $true
 

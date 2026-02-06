@@ -21,16 +21,20 @@ ANISTAS (Automated NIST Auditing System) simplifies the auditing process for SP 
 * (Tentative) Full automation for system scanning.
 
 ## Tech Stack
-**Language:** Go 1.20+
-**CLI Framework:** spf13 Cobra
-**Database:** SQLite
-**Other Libraries:** 
-* Viper
-* Fyne
-**NIST Control(s) Framework:** OSCAL
-**Compliance Engine:** Custom Go modules parsing OSCAL-formatted regulatory documents
-
+* **Language:** Go 1.20+\
+**Other Libraries:**
+* **NIST Control(s) Framework:** OSCAL (inspired)
+* **Compliance Engine:** Custom Go modules parsing OSCAL-formatted regulatory documents
+* **Report Generation:** PDF generation with wkhtmltopdf
 # Getting Started
+## *Prerequisites*
+* Go 1.20+
+## Where to launch ANISTAS
+Navigate to the project folder and execute launcher.exe.
+This action will initiate all the project components.
+Subsequently, a PDF document containing the audit findings will be produced.
+## Where to access the report
+The report will be located in the project folder under the name "compliance-report-[report_id].pdf".
 ## *CLI Cloning*
 ```
 # Clone repo

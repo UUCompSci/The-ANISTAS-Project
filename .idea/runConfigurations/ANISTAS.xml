@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ANISTAS" type="CompoundRunConfigurationType">
-    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/Main" type="GoApplicationRunConfiguration" />
-    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/Main (1)" type="GoApplicationRunConfiguration" />
-    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/Main (2)" type="GoApplicationRunConfiguration" />
-    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/Main (3)" type="GoApplicationRunConfiguration" />
+    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/cmd/compliance" type="GoApplicationRunConfiguration" />
+    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/cmd/diagnostics" type="GoApplicationRunConfiguration" />
+    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/cmd/orchestrator" type="GoApplicationRunConfiguration" />
+    <toRun name="go build github.com/UUCompSci/The-ANISTAS-Project/cmd/pdf" type="GoApplicationRunConfiguration" />
     <method v="2" />
   </configuration>
 </component>

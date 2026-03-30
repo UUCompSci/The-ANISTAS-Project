@@ -1,5 +1,4 @@
 //go:build windows
-// +build windows
 
 package powershell
 
@@ -36,7 +35,7 @@ func GetAdminSysProcAttr() *syscall.SysProcAttr {
 	}
 }
 
-// This function checks to see if the current user is an administrator
+// AmAdmin This function checks to see if the current user is an administrator
 func AmAdmin() bool {
 	f, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 	if err != nil {
@@ -46,9 +45,9 @@ func AmAdmin() bool {
 	return true
 }
 
-// If the user is not an administrator, relaunch the program
+// RelaunchAsAdmin If the user is not an administrator, relaunch the program
 func RelaunchAsAdmin() error {
-	verb := "runas" // tell shell execute to run as admin
+	verb := "runas" // tell Shell execute to run as admin
 
 	exe, err := os.Executable()
 	if err != nil {

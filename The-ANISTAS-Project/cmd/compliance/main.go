@@ -20,7 +20,7 @@ type complianceServer struct {
 	pb.UnimplementedComplianceServiceServer
 }
 
-// CHECK NIST SP 800-171
+// CheckNIST800171 CHECK NIST SP 800-171
 func (s *complianceServer) CheckNIST800171(ctx context.Context, req *pb.ComplianceCheckRequest) (*pb.ComplianceCheckResponse, error) {
 	log.Printf("Evaluating compliance against NIST SP 800-171 for: %s", req.ServiceName)
 
